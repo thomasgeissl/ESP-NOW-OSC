@@ -5,10 +5,12 @@
 #include <MIDI.h>
 #include <esp_now_midi.h>
 #include <WiFi.h>
+#include <WiFiUdp.h>
 #include <Adafruit_TinyUSB.h>
 
 // Adafruit_USBD_CDC_ECM usb_ethernet;
 IPAddress gateway;
+WiFiUDP udp;
 void setup()
 {
   Serial.begin(115200);
@@ -35,6 +37,9 @@ void setup()
     delay(10);
     TinyUSBDevice.attach();
   }
+
+  udp.begin(9000);
+
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK)
@@ -76,4 +81,8 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   message.fill(incomingData, len);
   // TODO: send osc message to host (should hopefully be gateway) via udp
   // TODO: needs a mechanism for larger messages than the max OSC NOW package size
+    udp.beginPacket(outIp, outPort);
+    message.send(Udp);
+    udp.endPacket();
+    message.empty();
 }
