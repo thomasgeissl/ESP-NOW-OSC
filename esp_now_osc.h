@@ -43,6 +43,86 @@ public:
     message.status = MIDI_NOTE_ON;
     message.firstByte = note;
     message.secondByte = velocity;
+
+
+    // TODO: take code from cnmat/oscmessage send function to serialize the message
+
+//     OSCMessage& OSCMessage::send(Print &p){
+//     //don't send a message with errors
+//     if (hasError()){
+//         return *this;
+//     }
+//     uint8_t nullChar = '\0';
+//     //send the address
+//     int addrLen = strlen(address) + 1;
+//     //padding amount
+//     int addrPad = padSize(addrLen);
+//     //write it to the stream
+//     p.write((uint8_t *) address, addrLen);
+//     //add the padding
+//     while(addrPad--){
+//         p.write(nullChar);
+//     }
+//     //add the comma separator
+//     p.write((uint8_t) ',');
+//     //add the types
+// #ifdef PAULSSUGGESTION
+//     // Paul suggested buffering on the stack
+//     // to improve performance. The problem is this could exhaust the stack
+//     // for long complex messages
+//     {
+//         uint8_t typstr[dataCount];
+
+//         for (int i = 0; i < dataCount; i++){
+//             typstr[i] =  getType(i);
+//         }
+//         p.write(typstr,dataCount);
+//     }
+// #else
+//     for (int i = 0; i < dataCount; i++){
+//         p.write((uint8_t) getType(i));
+//     }
+// #endif
+//     //pad the types
+//     int typePad = padSize(dataCount + 1); // 1 is for the comma
+//     if (typePad == 0){
+//             typePad = 4;  // This is because the type string has to be null terminated
+//     }
+//     while(typePad--){
+//         p.write(nullChar);
+//     }
+//     //write the data
+//     for (int i = 0; i < dataCount; i++){
+//         const auto datum = getOSCData(i);
+//         if ((datum->type == 's') || (datum->type == 'b')){
+//             p.write(datum->data.b, datum->bytes);
+//             int dataPad = padSize(datum->bytes);
+//             while(dataPad--){
+//                 p.write(nullChar);
+//             }
+//         } else if (datum->type == 'd'){
+//             double d = BigEndian(datum->data.d);
+//             uint8_t * ptr = (uint8_t *) &d;
+//             p.write(ptr, 8);
+//         } else if (datum->type == 't'){
+//             osctime_t time =  datum->data.time;
+//             uint32_t d = BigEndian(time.seconds);
+//             uint8_t * ptr = (uint8_t *)    &d;
+//             p.write(ptr, 4);
+//             d = BigEndian(time.fractionofseconds);
+//             ptr = (uint8_t *)    &d;
+//             p.write(ptr, 4);
+
+//         } else if (datum->type == 'T' || datum->type == 'F')
+//                     { }
+//         else { // float or int
+//             uint32_t i = BigEndian(datum->data.i);
+//             uint8_t * ptr = (uint8_t *) &i;
+//             p.write(ptr, datum->bytes);
+//         }
+//     }
+//     return *this;
+// }
     return esp_now_send(_broadcastAddress, (uint8_t *)&message, sizeof(message));
   }
   esp_err_t send(OSCBundle &bundle) {
